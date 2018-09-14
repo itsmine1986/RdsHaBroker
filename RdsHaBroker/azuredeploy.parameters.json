@@ -3,10 +3,10 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "existingDomainName": {
-      "value": null
+      "value": "adm.scalesquad.io"
     },
     "primaryDbConnectionString": {
-      "value": null
+      "value": "Driver={ODBC Driver 13 for SQL Server};Server=tcp:rdsservertest1.database.windows.net,1433;Database=rdsdatabase;Uid=insa@rdsservertest1;Pwd={your_password_here};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;"
     }
   }
 }
