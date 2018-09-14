@@ -1,122 +1,129 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "clientAccessName": {
-            "type": "string",
-            "defaultValue": "bpama",
-            "metadata": {
-                "description": "The name of the Connection Broker Servers to be added to the DNS."
-            }
-        },
-        "dnsServer": {
-            "type": "string",
-            "defaultValue": "10.40.0.4",
-            "metadata": {
-                "description": "The name of the DNS Server to add the DNS entry to for the Connection Broker Names"
-            }
-        },
-        "existingAdminPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The password of the administrator account"
-            }
-        },
-        "existingAdminUsername": {
-            "type": "string",
-            "defaultValue": "ssubramanian",
-            "metadata": {
-                "description": "Name of domain user account with administrative priveledges to manage RDS deployment"
-            }
-        },
-        "existingBrokerAvailabilitySet": {
-            "type": "string",
-            "defaultValue": "AsTRdcbh01",
-            "metadata": {
-                "description": "Availability set for RD Connection Brokers"
-            }
-        },
-        "existingBrokerHostname": {
-            "type": "string",
-            "defaultValue": "VmWTRdcbh01",
-            "metadata": {
-                "description": "The host name of the existing Connection Broker vm"
-            }
-        },
-        "existingDomainName": {
-            "type": "string",
-            "metadata": {
-                "description": "The domain to join the Connection Broker Machine to"
-            }
-        },
-        "existingSubnetName": {
-            "type": "string",
-            "defaultValue": "default",
-            "metadata": {
-                "description": "Subnet name"
-            }
-        },
-        "existingVnetName": {
-            "type": "string",
-            "defaultValue": "VNAdminZone",
-            "metadata": {
-                "description": "Virtual network name"
-            }
-        },
-        "primaryDbConnectionString": {
-            "type": "string",
-            "metadata": {
-                "description": "Specifies the database primary connection string. The database connection string supports both high availability configurations: -- Dedicated database server. Uses Windows Authentication to connect to the databse. -- Shared database server. Uses database authentication (such as SQL authentication) with a user name and password to connect to the database."
-            }
-        },
-        "sqlServer": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The name of the SQL server that the database is located on (only required for the Dedicated database server case w/Windows Auth)"
-            }
-        },
-        "windowsServerVersion": {
-            "type": "string",
-            "allowedValues": [
-                "2012-R2-Datacenter",
-                "2016-Datacenter"
-            ],
-            "metadata": {
-                "description": "Windows server version for the second Broker; should be same version as the first broker in the deployment"
-            },
-            "defaultValue": "2016-Datacenter"
-        },
-      "artifactsLocation": {
-        "type": "string",
-        "metadata": {
-          "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-        },
-        "defaultValue": "https://raw.githubusercontent.com/itsmine1986/RdsHaBroker/master/RdsHaBroker/"
+  "parameters": {
+    "clientAccessName": {
+      "type": "string",
+      "defaultValue": "bpama",
+      "metadata": {
+        "description": "The name of the Connection Broker Servers to be added to the DNS."
       }
     },
-    "variables": {
-        "brokerVmName": "[concat(variables('vmPrefix'), '02')]",
-        "brokerNicName": "[concat('Nc',variables('brokerVmName'))]",
-        "storageAccountName": "[concat('satbpama',uniquestring(resourceGroup().id))]",
-        "storageAccountType": "Standard_LRS",
-        "sqlClientUrl": "http://go.microsoft.com/fwlink/?LinkID=239648&clcid=0x409",
-        "vmPrefix": "VmWTRdcbh",
-        "p": {
-            "broker": "[concat(' -existingBroker ', parameters('existingBrokerHostname'))]",
-            "connstr": "[concat(' -primaryDbConnectionString \"', parameters('primaryDbConnectionString'), '\"')]",
-            "domain": "[concat(' -domainName ', parameters('existingDomainName'))]",
-            "user": "[concat(' -username ', parameters('existingAdminUsername'))]",
-            "pwd": "[concat(' -password ', parameters('existingAdminPassword'))]",
-            "can": "[concat(' -clientAccessName \"', parameters('clientAccessName'), '\"')]",
-            "sqlnclient": "[concat(' -sqlClientUrl \"', variables('sqlClientUrl'), '\"')]",
-            "dnsserver": "[concat(' -dnsServer ', parameters('dnsServer'))]",
-            "sqlserver": "[concat(' -sqlServer \"', parameters('sqlServer'), '\"')]"
-        },
-        "scriptParameters": "[concat(variables('p').broker, variables('p').connstr, variables('p').domain, variables('p').user, variables('p').pwd, variables('p').can, variables('p').sqlnclient, variables('p').dnsserver, variables('p').sqlserver)]",
-        "scriptLocation": "[concat(parameters('artifactsLocation'), '/Scripts')]",
-        "scriptFileName": "RdcbHaPostConfig.ps1"
+    "existingVnetResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the resourceGroup for the vnet"
+      }
     },
+    "dnsServer": {
+      "type": "string",
+      "defaultValue": "10.40.0.4",
+      "metadata": {
+        "description": "The name of the DNS Server to add the DNS entry to for the Connection Broker Names"
+      }
+    },
+    "existingAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password of the administrator account"
+      }
+    },
+    "existingAdminUsername": {
+      "type": "string",
+      "defaultValue": "ssubramanian",
+      "metadata": {
+        "description": "Name of domain user account with administrative priveledges to manage RDS deployment"
+      }
+    },
+    "existingBrokerAvailabilitySet": {
+      "type": "string",
+      "defaultValue": "AsTRdcbh01",
+      "metadata": {
+        "description": "Availability set for RD Connection Brokers"
+      }
+    },
+    "existingBrokerHostname": {
+      "type": "string",
+      "defaultValue": "VmWTRdcbh01",
+      "metadata": {
+        "description": "The host name of the existing Connection Broker vm"
+      }
+    },
+    "existingDomainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The domain to join the Connection Broker Machine to"
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "default",
+      "metadata": {
+        "description": "Subnet name"
+      }
+    },
+    "existingVnetName": {
+      "type": "string",
+      "defaultValue": "VNAdminZone",
+      "metadata": {
+        "description": "Virtual network name"
+      }
+    },
+    "primaryDbConnectionString": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the database primary connection string. The database connection string supports both high availability configurations: -- Dedicated database server. Uses Windows Authentication to connect to the databse. -- Shared database server. Uses database authentication (such as SQL authentication) with a user name and password to connect to the database."
+      }
+    },
+    "sqlServer": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The name of the SQL server that the database is located on (only required for the Dedicated database server case w/Windows Auth)"
+      }
+    },
+    "windowsServerVersion": {
+      "type": "string",
+      "allowedValues": [
+        "2012-R2-Datacenter",
+        "2016-Datacenter"
+      ],
+      "metadata": {
+        "description": "Windows server version for the second Broker; should be same version as the first broker in the deployment"
+      },
+      "defaultValue": "2016-Datacenter"
+    },
+    "artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+      },
+      "defaultValue": "https://raw.githubusercontent.com/itsmine1986/RdsHaBroker/master/RdsHaBroker/"
+    }
+  },
+  "variables": {
+    "brokerVmName": "[concat(variables('vmPrefix'), '02')]",
+    "brokerNicName": "[concat('Nc',variables('brokerVmName'))]",
+    "subnet-id": "[resourceId(parameters('existingVnetResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('existingSubnetName'))]",
+    "storageAccountName": "[concat('satbpama',uniquestring(resourceGroup().id))]",
+    "storageAccountType": "Standard_LRS",
+    "sqlClientUrl": "http://go.microsoft.com/fwlink/?LinkID=239648&clcid=0x409",
+    "vmPrefix": "VmWTRdcbh",
+    "p": {
+      "broker": "[concat(' -existingBroker ', parameters('existingBrokerHostname'))]",
+      "connstr": "[concat(' -primaryDbConnectionString \"', parameters('primaryDbConnectionString'), '\"')]",
+      "domain": "[concat(' -domainName ', parameters('existingDomainName'))]",
+      "user": "[concat(' -username ', parameters('existingAdminUsername'))]",
+      "pwd": "[concat(' -password ', parameters('existingAdminPassword'))]",
+      "can": "[concat(' -clientAccessName \"', parameters('clientAccessName'), '\"')]",
+      "sqlnclient": "[concat(' -sqlClientUrl \"', variables('sqlClientUrl'), '\"')]",
+      "dnsserver": "[concat(' -dnsServer ', parameters('dnsServer'))]",
+      "sqlserver": "[concat(' -sqlServer \"', parameters('sqlServer'), '\"')]"
+    },
+    "scriptParameters": "[concat(variables('p').broker, variables('p').connstr, variables('p').domain, variables('p').user, variables('p').pwd, variables('p').can, variables('p').sqlnclient, variables('p').dnsserver, variables('p').sqlserver)]",
+    "scriptLocation": "[concat(parameters('artifactsLocation'), '/Scripts')]",
+    "scriptFileName": "RdcbHaPostConfig.ps1"
+  },
     "resources": [
         {
             "apiVersion": "2015-06-15",
@@ -133,19 +140,19 @@
             "name": "[variables('brokerNicName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('existingSubnetName'))]"
-                            }
-                        }
-                    }
-                ]
-            }
+          "properties": {
+            "ipConfigurations": [
+              {
+                "name": "ipconfig",
+                "properties": {
+                  "privateIPAllocationMethod": "Dynamic",
+                  "subnet": {
+                    "id": "[variables('subnet-id')][variables('subnet-id')]"
+                  }
+                }
+              }
+            ]
+          }
         },
         {
             "apiVersion": "2016-04-30-preview",
